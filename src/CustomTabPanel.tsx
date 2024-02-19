@@ -48,8 +48,8 @@ export default function BasicTabs() {
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          <Tab label="Chat with data" {...a11yProps(0)} />
-          <Tab label="Image classification" {...a11yProps(1)} />
+          <Tab label="Image classification" {...a11yProps(0)} />
+          <Tab label="Chat with data" {...a11yProps(1)} />
           <Tab label="Function API" {...a11yProps(2)} />
         </Tabs>
       </Box>

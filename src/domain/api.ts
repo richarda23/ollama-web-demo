@@ -1,7 +1,14 @@
 const apiserver = "http://localhost:3000";
 
-export default async function cities() {
-  const res = await fetch(`${apiserver}/cities/germany`);
+type City = {
+  name: string;
+  description: string;
+};
+type Cities = {
+  destinations: City[];
+};
+export default async function cities(): Promise<Cities> {
+  const res = await fetch(`${apiserver}/cities/canada`);
   const jsonresp = await res.json();
   console.info(`json resp = ${jsonresp}`);
   return jsonresp;
@@ -9,6 +16,22 @@ export default async function cities() {
 
 export async function availableImages(): Promise<string[]> {
   const res = await fetch(`${apiserver}/availableImages`);
+  const jsonresp = await res.json();
+  return jsonresp;
+}
+export type Analysis = {
+  threat: number;
+  imageSummary: string;
+  droneCount: number;
+};
+export type ImageDesc = {
+  file: string;
+  analysis: Analysis;
+  originalImageDescription: string;
+};
+
+export async function describeImage(imageFileName: string): Promise<ImageDesc> {
+  const res = await fetch(`${apiserver}/describeImage/${imageFileName}`);
   const jsonresp = await res.json();
   return jsonresp;
 }

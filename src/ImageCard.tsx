@@ -1,22 +1,24 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useState } from "react";
-import cities from "./domain/api";
+import { Analysis, describeImage } from "./domain/api";
 export type ImageCardProps = {
   image: string;
-  raw: string;
 };
+
 const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
   const [desc, setDesc] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [analysis, setAnalysis] = useState<Analysis | undefined>(undefined);
 
-  React.useEffect(() => {
-    cities().then((c) =>
-      setDesc(c.destinations.map((c) => c.description).join(","))
-    );
-  }, []);
-
-  const handleClick = () => {
-    setDesc((desc) => desc + ".");
+  const handleClick = async () => {
+    setLoading(true);
+    setAnalysis(undefined);
+    describeImage(image).then((c) => {
+      setDesc(c.originalImageDescription);
+      setAnalysis(c.analysis);
+      setLoading(false);
+    });
   };
   return (
     <Box sx={{ p: "1em" }}>
@@ -25,8 +27,19 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
         width={300}
         height={300}
       />
-      <Button onClick={handleClick}>Describe</Button>
+      <Button disabled={loading} onClick={handleClick}>
+        Describe
+      </Button>
       <Button onClick={() => setDesc("")}>Clear</Button>
+      {loading && <Typography>Loading...</Typography>}
+      <Box display="flex" justifyContent={"space-between"}>
+        {analysis && (
+          <>
+            <Box>Drone Count: {analysis?.droneCount}</Box>
+            <Box>Threat: {analysis?.threat}</Box>
+          </>
+        )}
+      </Box>
       <Typography>{desc}</Typography>
     </Box>
   );
