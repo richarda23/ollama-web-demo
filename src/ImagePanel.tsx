@@ -2,7 +2,6 @@ import { Box } from "@mui/material";
 import ImageCard from "./ImageCard";
 import { availableImages } from "./domain/api";
 import { useEffect, useState } from "react";
-import UploadButton from "./components/UploadButton";
 import UploadForm from "./components/FileUpload";
 
 const ImagePanel: React.FC = () => {
@@ -12,7 +11,8 @@ const ImagePanel: React.FC = () => {
   }, []);
   return (
     <>
-      <UploadForm sx={{ mt: 2 }} />
+      {/* TODO update stlying and show file details while uploading */}
+      <UploadForm />
       <Box
         sx={{
           display: "grid",

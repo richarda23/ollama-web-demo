@@ -1,6 +1,7 @@
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { postImage } from "../domain/api";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -20,18 +21,14 @@ export default function UploadForm() {
     const formData = new FormData();
     const files = event.target.files;
     files && formData.append("file", files[0]);
+
     console.info("file uploaded " + event.target.files?.length);
     //  formData.append("file", file);
     try {
       // You can write the URL of your server or any other endpoint used for file upload
-      const result = await fetch("https://httpbin.org/post", {
-        method: "POST",
-        body: formData,
-      });
+      const result = await postImage(formData);
 
-      const data = await result.json();
-
-      console.log(data);
+      console.log(result);
     } catch (error) {
       console.error(error);
     }

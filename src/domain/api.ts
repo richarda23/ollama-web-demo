@@ -35,3 +35,14 @@ export async function describeImage(imageFileName: string): Promise<ImageDesc> {
   const jsonresp = await res.json();
   return jsonresp;
 }
+
+export const postImage = async (file: FormData): Promise<string> => {
+  const res = await fetch(`${apiserver}/upload/`, {
+    method: "POST",
+    body: file,
+    // headers: {
+    //   "Content-Type": "multipart/form-data",
+    // },
+  });
+  return await res.json();
+};

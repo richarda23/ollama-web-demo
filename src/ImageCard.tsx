@@ -14,11 +14,15 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
   const handleClick = async () => {
     setLoading(true);
     setAnalysis(undefined);
-    describeImage(image).then((c) => {
-      setDesc(c.originalImageDescription);
-      setAnalysis(c.analysis);
-      setLoading(false);
-    });
+    describeImage(image)
+      .then((c) => {
+        setDesc(c.originalImageDescription);
+        setAnalysis(c.analysis);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+      });
   };
   return (
     <Box sx={{ p: "1em" }}>
