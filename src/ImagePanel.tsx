@@ -6,13 +6,20 @@ import UploadForm from "./components/FileUpload";
 
 const ImagePanel: React.FC = () => {
   const [imageNames, setImageNames] = useState<string[]>([]);
+
+  // refresh when new image added
+  const [newUpload, onNewUpload] = useState<string>();
   useEffect(() => {
     availableImages().then((i) => setImageNames(i));
-  }, []);
+  }, [newUpload]);
   return (
     <>
       {/* TODO update stlying and show file details while uploading */}
-      <UploadForm />
+      {/* TODO sort images by file upload order */}
+      {/* TODO delete image */}
+      {/* TODO cache descriptions */}
+      {/* TODO split description from analysis for faaster response */}
+      <UploadForm onUpload={onNewUpload} />
       <Box
         sx={{
           display: "grid",

@@ -15,7 +15,9 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-export default function UploadForm() {
+const UploadForm: React.FC<{ onUpload: (arg: string) => void }> = ({
+  onUpload,
+}) => {
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     // const file = event.target.files[0];
     const formData = new FormData();
@@ -27,6 +29,7 @@ export default function UploadForm() {
     try {
       // You can write the URL of your server or any other endpoint used for file upload
       const result = await postImage(formData);
+      onUpload(result);
 
       console.log(result);
     } catch (error) {
@@ -50,4 +53,5 @@ export default function UploadForm() {
       />
     </Button>
   );
-}
+};
+export default UploadForm;

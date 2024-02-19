@@ -20,7 +20,7 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
         setAnalysis(c.analysis);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setLoading(false);
       });
   };
@@ -34,10 +34,10 @@ const ImageCard: React.FC<ImageCardProps> = ({ image }) => {
       <Button disabled={loading} onClick={handleClick}>
         Describe
       </Button>
-      <Button onClick={() => setDesc("")}>Clear</Button>
+      {desc && <Button onClick={() => setDesc("")}>Clear</Button>}
       {loading && <Typography>Loading...</Typography>}
       <Box display="flex" justifyContent={"space-between"}>
-        {analysis && (
+        {desc && analysis && (
           <>
             <Box>Drone Count: {analysis?.droneCount}</Box>
             <Box>Threat: {analysis?.threat}</Box>
