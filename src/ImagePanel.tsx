@@ -8,18 +8,17 @@ const ImagePanel: React.FC = () => {
   const [imageNames, setImageNames] = useState<string[]>([]);
 
   // refresh when new image added
-  const [newUpload, onNewUpload] = useState<string>();
+  const [filesChanged, setFilesChanged] = useState<string>();
   useEffect(() => {
     availableImages().then((i) => setImageNames(i));
-  }, [newUpload]);
+  }, [filesChanged]);
   return (
     <>
       {/* TODO update stlying and show file details while uploading */}
       {/* TODO sort images by file upload order */}
-      {/* TODO delete image */}
       {/* TODO cache descriptions */}
       {/* TODO split description from analysis for faaster response */}
-      <UploadForm onUpload={onNewUpload} />
+      <UploadForm onUpload={setFilesChanged} />
       <Box
         sx={{
           display: "grid",
@@ -28,7 +27,7 @@ const ImagePanel: React.FC = () => {
         }}
       >
         {imageNames.map((im, i) => (
-          <ImageCard image={im} key={i}></ImageCard>
+          <ImageCard image={im} key={i} onChange={setFilesChanged}></ImageCard>
         ))}
       </Box>
     </>

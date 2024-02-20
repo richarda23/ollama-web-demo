@@ -46,3 +46,10 @@ export const postImage = async (file: FormData): Promise<string> => {
   });
   return await res.json();
 };
+
+export const deleteImage = async (fileName: string): Promise<boolean> => {
+  const res = await fetch(`${apiserver}/delete/${fileName}`, {
+    method: "DELETE",
+  });
+  return res.status === 204;
+};
