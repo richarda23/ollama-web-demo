@@ -1,4 +1,19 @@
-# React + TypeScript + Vite
+##
+
+Demo using vite/react/ to show several use cases of Ollama.
+
+This is front end, the LLM calls are done in backend
+
+### Get started
+
+- you need Ollama installed
+- requires backend project to be running
+
+### Running
+
+    npm run dev
+
+## Blurb from create-vite ap
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
@@ -17,12 +32,12 @@ If you are developing a production application, we recommend updating the config
 export default {
   // other rules...
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
