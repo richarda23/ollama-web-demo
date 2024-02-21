@@ -20,18 +20,36 @@ export async function availableImages(): Promise<string[]> {
   return jsonresp;
 }
 export type Analysis = {
-  threat: number;
-  imageSummary: string;
   droneCount: number;
 };
 export type ImageDesc = {
   file: string;
+  imageDesc: string;
+};
+
+export type ImageAnalysis = {
+  filename: string;
   analysis: Analysis;
   originalImageDescription: string;
 };
 
 export async function describeImage(imageFileName: string): Promise<ImageDesc> {
   const res = await fetch(`${apiserver}/describeImage/${imageFileName}`);
+  const jsonresp = await res.json();
+  return jsonresp;
+}
+
+export async function getAnalysis(
+  imageFileName: string,
+  text: string
+): Promise<ImageAnalysis> {
+  const res = await fetch(`${apiserver}/parseText/${imageFileName}`, {
+    method: "POST",
+    body: JSON.stringify({ imageDesc: text }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   const jsonresp = await res.json();
   return jsonresp;
 }

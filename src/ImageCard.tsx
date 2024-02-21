@@ -1,39 +1,53 @@
 import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useState } from "react";
-import { Analysis, deleteImage, describeImage } from "./domain/api";
+import {
+  Analysis,
+  deleteImage,
+  describeImage,
+  getAnalysis,
+} from "./domain/api";
 export type ImageCardProps = {
   image: string;
   onChange: (file: string) => void;
 };
+type LoadingState = "LOADING" | "SUCCESS" | "FAILED" | "PENDING";
+type Loading = {
+  state: LoadingState;
+  displayMessage: string;
+};
 
 const ImageCard: React.FC<ImageCardProps> = ({ image, onChange }) => {
   const [desc, setDesc] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<Loading>({
+    state: "PENDING",
+    displayMessage: "",
+  });
   const [analysis, setAnalysis] = useState<Analysis | undefined>(undefined);
 
   const handleClick = async () => {
-    setLoading(true);
+    setLoading({ state: "LOADING", displayMessage: "Describing image..." });
     setAnalysis(undefined);
-    describeImage(image)
-      .then((c) => {
-        setDesc(c.originalImageDescription);
-        setAnalysis(c.analysis);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+    try {
+      const desc = await describeImage(image);
+
+      setDesc(desc.imageDesc);
+      setLoading({ ...loading, displayMessage: "Analysing text..." });
+      const parsedImageText = await getAnalysis(image, desc.imageDesc);
+      setAnalysis(parsedImageText.analysis);
+      setLoading({ state: "SUCCESS", displayMessage: "" });
+    } catch (e) {
+      setLoading({ state: "FAILED", displayMessage: "Failed" });
+    }
   };
 
   const handleDelete = async () => {
-    setLoading(true);
     setAnalysis(undefined);
     deleteImage(image)
       .then((c) => {
         c && onChange(image);
       })
-      .finally(() => setLoading(false));
+      .finally(() => {});
   };
   return (
     <Box sx={{ p: "1em" }}>
@@ -42,19 +56,18 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, onChange }) => {
         width={300}
         height={300}
       />
-      <Button disabled={loading} onClick={handleClick}>
+      <Button disabled={loading.state === "LOADING"} onClick={handleClick}>
         Describe
       </Button>
-      <Button disabled={loading} onClick={handleDelete}>
+      <Button disabled={loading.state === "LOADING"} onClick={handleDelete}>
         Delete
       </Button>
       {desc && <Button onClick={() => setDesc("")}>Clear</Button>}
-      {loading && <Typography>Loading...</Typography>}
+      <Typography>{loading.displayMessage}</Typography>
       <Box display="flex" justifyContent={"space-between"}>
         {desc && analysis && (
           <>
             <Box>Drone Count: {analysis?.droneCount}</Box>
-            <Box>Threat: {analysis?.threat}</Box>
           </>
         )}
       </Box>
