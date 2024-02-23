@@ -2,14 +2,15 @@ import { Box, Button, Typography } from "@mui/material";
 import React from "react";
 import { useState } from "react";
 import {
-  Analysis,
+  ImageAnalysis,
   deleteImage,
   describeImage,
   getAnalysis,
 } from "./domain/api";
+import { ActionPayload } from "./domain/models";
 export type ImageCardProps = {
-  image: string;
-  onChange: (file: string) => void;
+  image: ImageAnalysis;
+  dispatch: React.Dispatch<ActionPayload>;
 };
 type LoadingState = "LOADING" | "SUCCESS" | "FAILED" | "PENDING";
 type Loading = {
@@ -17,24 +18,35 @@ type Loading = {
   displayMessage: string;
 };
 
-const ImageCard: React.FC<ImageCardProps> = ({ image, onChange }) => {
-  const [desc, setDesc] = useState<string>("");
+const ImageCard: React.FC<ImageCardProps> = ({ image, dispatch }) => {
+  // const [desc, setDesc] = useState<string>("");
+  // const [analysis, setAnalysis] = useState<Analysis | undefined>(undefined);
   const [loading, setLoading] = useState<Loading>({
     state: "PENDING",
     displayMessage: "",
   });
-  const [analysis, setAnalysis] = useState<Analysis | undefined>(undefined);
 
   const handleClick = async () => {
     setLoading({ state: "LOADING", displayMessage: "Describing image..." });
-    setAnalysis(undefined);
-    try {
-      const desc = await describeImage(image);
 
-      setDesc(desc.imageDesc);
+    try {
+      const desc = await describeImage(image.filename);
+
+      dispatch({
+        type: "changed",
+        payload: { ...image, originalImageDescription: desc.imageDesc },
+      });
       setLoading({ ...loading, displayMessage: "Analysing text..." });
-      const parsedImageText = await getAnalysis(image, desc.imageDesc);
-      setAnalysis(parsedImageText.analysis);
+      const parsedImageText = await getAnalysis(image.filename, desc.imageDesc);
+      dispatch({
+        type: "changed",
+        payload: {
+          ...image,
+          originalImageDescription: desc.imageDesc,
+          analysis: parsedImageText.analysis,
+        },
+      });
+
       setLoading({ state: "SUCCESS", displayMessage: "" });
     } catch (e) {
       setLoading({ state: "FAILED", displayMessage: "Failed" });
@@ -42,17 +54,16 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, onChange }) => {
   };
 
   const handleDelete = async () => {
-    setAnalysis(undefined);
-    deleteImage(image)
+    deleteImage(image.filename)
       .then((c) => {
-        c && onChange(image);
+        c && dispatch({ type: "remove", payload: image });
       })
       .finally(() => {});
   };
   return (
     <Box sx={{ p: "1em" }}>
       <img
-        src={`http://localhost:3000/images/${image}`}
+        src={`http://localhost:3000/images/${image.filename}`}
         width={300}
         height={300}
       />
@@ -62,16 +73,27 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, onChange }) => {
       <Button disabled={loading.state === "LOADING"} onClick={handleDelete}>
         Delete
       </Button>
-      {desc && <Button onClick={() => setDesc("")}>Clear</Button>}
+      {image.originalImageDescription && (
+        <Button
+          onClick={() =>
+            dispatch({
+              type: "changed",
+              payload: { ...image, originalImageDescription: "" },
+            })
+          }
+        >
+          Clear
+        </Button>
+      )}
       <Typography>{loading.displayMessage}</Typography>
       <Box display="flex" justifyContent={"space-between"}>
-        {desc && analysis && (
+        {image.originalImageDescription.length > 0 && image.analysis && (
           <>
-            <Box>Drone Count: {analysis?.droneCount}</Box>
+            <Box>Drone Count: {image.analysis?.droneCount}</Box>
           </>
         )}
       </Box>
-      <Typography>{desc}</Typography>
+      <Typography>{image.originalImageDescription}</Typography>
     </Box>
   );
 };

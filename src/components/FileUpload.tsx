@@ -2,6 +2,7 @@ import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { postImage } from "../domain/api";
+import { ActionPayload } from "../domain/models";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -15,21 +16,32 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const UploadForm: React.FC<{ onUpload: (arg: string) => void }> = ({
-  onUpload,
+const UploadForm: React.FC<{ dispatch: React.Dispatch<ActionPayload> }> = ({
+  dispatch,
 }) => {
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     // const file = event.target.files[0];
     const formData = new FormData();
     const files = event.target.files;
     files && formData.append("file", files[0]);
+    let name = "";
+    if (files) {
+      name = files[0].name;
+    }
 
     console.info("file uploaded " + event.target.files?.length);
     //  formData.append("file", file);
     try {
       // You can write the URL of your server or any other endpoint used for file upload
       const result = await postImage(formData);
-      onUpload(result);
+      dispatch({
+        type: "add",
+        payload: {
+          analysis: { droneCount: -1 },
+          originalImageDescription: "",
+          filename: name,
+        },
+      });
 
       console.log(result);
     } catch (error) {
