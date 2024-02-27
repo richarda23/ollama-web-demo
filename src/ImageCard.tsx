@@ -87,11 +87,13 @@ const ImageCard: React.FC<ImageCardProps> = ({ image, dispatch }) => {
       )}
       <Typography>{loading.displayMessage}</Typography>
       <Box display="flex" justifyContent={"space-between"}>
-        {image.originalImageDescription.length > 0 && image.analysis && (
-          <>
-            <Box>Drone Count: {image.analysis?.droneCount}</Box>
-          </>
-        )}
+        {loading.state !== "LOADING" &&
+          image.originalImageDescription.length > 0 &&
+          image.analysis.droneCount > -1 && (
+            <>
+              <Box>Drone Count: {image.analysis?.droneCount}</Box>
+            </>
+          )}
       </Box>
       <Typography>{image.originalImageDescription}</Typography>
     </Box>

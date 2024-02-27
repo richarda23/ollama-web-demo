@@ -19,6 +19,12 @@ export async function availableImages(): Promise<string[]> {
   const jsonresp = await res.json();
   return jsonresp;
 }
+
+export async function availablePdfs(): Promise<string[]> {
+  const res = await fetch(`${apiserver}/availablePdfs`);
+  const jsonresp = await res.json();
+  return jsonresp;
+}
 export type Analysis = {
   droneCount: number;
 };
@@ -70,4 +76,28 @@ export const deleteImage = async (fileName: string): Promise<boolean> => {
     method: "DELETE",
   });
   return res.status === 204;
+};
+
+export const rag = async (fileName: string, query: string): Promise<string> => {
+  const res = await fetch(`${apiserver}/rag/${fileName}`, {
+    method: "POST",
+    body: JSON.stringify({ q: query }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const jsonresp = await res.json();
+  return jsonresp;
+};
+
+export const ragIndex = async (fileName: string): Promise<number> => {
+  const res = await fetch(`${apiserver}/ragindex/${fileName}`, {
+    method: "POST",
+    body: JSON.stringify({ something: "1" }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const jsonresp = await res.json();
+  return jsonresp;
 };

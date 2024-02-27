@@ -3,6 +3,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import ImagePanel from "./ImagePanel";
+import RagPanel from "./RagPanel";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -57,7 +58,7 @@ export default function BasicTabs() {
         <ImagePanel />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        Item Two
+        <RagPanel />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
         Item Three

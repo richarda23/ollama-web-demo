@@ -1,12 +1,12 @@
 import { Box } from "@mui/material";
 import ImageCard from "./ImageCard";
-import { availableImages } from "./domain/api";
+import { availableImages, postImage } from "./domain/api";
 import { useEffect, useReducer } from "react";
 import UploadForm from "./components/FileUpload";
 import { ImageCards, reducer } from "./domain/models";
+
 const ImagePanel: React.FC = () => {
   const [imageCards, dispatch] = useReducer(reducer, []);
-
   // refresh when new image added/deleted
   useEffect(() => {
     availableImages().then((i) => {
@@ -18,12 +18,43 @@ const ImagePanel: React.FC = () => {
       dispatch({ type: "replace", payload: cards });
     });
   }, []);
+
+  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    // const file = event.target.files[0];
+    const formData = new FormData();
+    const files = event.target.files;
+    files && formData.append("file", files[0]);
+    let name = "";
+    if (files) {
+      name = files[0].name;
+    }
+
+    console.info("file uploaded " + event.target.files?.length);
+    //  formData.append("file", file);
+    try {
+      // You can write the URL of your server or any other endpoint used for file upload
+      const result = await postImage(formData);
+      dispatch({
+        type: "add",
+        payload: {
+          analysis: { droneCount: -1 },
+          originalImageDescription: "",
+          filename: name,
+        },
+      });
+
+      console.log(result);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       {/* TODO update stlying and show file details while uploading */}
       {/* TODO cache descriptions */}
-      {/* TODO fix state when adding/ deleting images - keep state high up */}
-      <UploadForm dispatch={dispatch} />
+      {/* local storage cache of descriptions */}
+      <UploadForm handleFileUpload={handleUpload} />
       <Box
         sx={{
           display: "grid",
